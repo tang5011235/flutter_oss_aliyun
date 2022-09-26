@@ -2,3 +2,4 @@
 library flutter_oss_aliyun;
 
 export 'src/client.dart';
+export 'package:dio/dio.dart';
