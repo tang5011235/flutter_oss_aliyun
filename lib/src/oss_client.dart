@@ -8,16 +8,16 @@ import 'auth.dart';
 import 'dio_client.dart';
 import 'encrypt.dart';
 
-class Client {
-  static Client? _instance;
+class OSSClient {
+  static OSSClient? _instance;
 
-  factory Client() => _instance!;
+  factory OSSClient() => _instance!;
 
   final String endpoint;
   final String bucketName;
   final Function? tokenGetter;
 
-  Client._(
+  OSSClient._(
     this.endpoint,
     this.bucketName,
     this.tokenGetter,
@@ -34,7 +34,7 @@ class Client {
           final response = await RestClient.getInstance().get<String>(stsUrl!);
           return response.data!;
         };
-    _instance = Client._(ossEndpoint, bucketName, tokenGet);
+    _instance = OSSClient._(ossEndpoint, bucketName, tokenGet);
   }
 
   Auth? _auth;

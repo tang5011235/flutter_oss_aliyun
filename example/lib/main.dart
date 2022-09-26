@@ -21,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    Client.init(
+    OSSClient.init(
       stsUrl: "server sts url",
       ossEndpoint: "oss-cn-beijing.aliyuncs.com",
       bucketName: "bucket name",
@@ -41,20 +41,20 @@ class _HomeScreenState extends State<HomeScreen> {
             TextButton(
               onPressed: () async {
                 final bytes = "Hello World".codeUnits;
-                await Client().putObject(bytes, "filename.txt");
+                await OSSClient().putObject(bytes, "filename.txt");
               },
               child: const Text("Upload object"),
             ),
             TextButton(
               onPressed: () async {
-                await Client()
+                await OSSClient()
                     .downloadObject("filename.txt", "./example/savePath.txt");
               },
               child: const Text("Download object"),
             ),
             TextButton(
               onPressed: () async {
-                await Client().deleteObject("filename.txt");
+                await OSSClient().deleteObject("filename.txt");
               },
               child: const Text("Delete object"),
             ),
