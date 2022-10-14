@@ -61,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             TextButton(
               onPressed: () async {
-                await Client().putObjects([
+                await OSSClient().putObjects([
                   AssetEntity(
                       filename: "filename1.txt", bytes: "files1".codeUnits),
                   AssetEntity(
@@ -72,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             TextButton(
               onPressed: () async {
-                await Client()
+                await OSSClient()
                     .deleteObjects(["filename1.txt", "filename2.txt"]);
               },
               child: const Text("Batch delete object"),
