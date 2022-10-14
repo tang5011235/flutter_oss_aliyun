@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_oss_aliyun/src/request.dart';
 import 'package:mime_type/mime_type.dart';
 
+import 'asset_entity.dart';
 import 'auth.dart';
 import 'dio_client.dart';
 import 'encrypt.dart';
@@ -15,7 +16,7 @@ class OSSClient {
 
   final String endpoint;
   final String bucketName;
-  final Function? tokenGetter;
+  final Future<String> Function() tokenGetter;
 
   OSSClient._(
     this.endpoint,
@@ -43,7 +44,7 @@ class OSSClient {
   /// get auth information from sts server
   Future<Auth> _getAuth() async {
     if (_isNotAuthenticated()) {
-      final resp = await tokenGetter!();
+      final resp = await tokenGetter();
       final respMap = jsonDecode(resp);
       _auth = Auth(respMap['AccessKeyId'], respMap['AccessKeySecret'],
           respMap['SecurityToken']);
@@ -108,6 +109,18 @@ class OSSClient {
     );
   }
 
+  /// upload object(files) to oss server
+  /// [assetEntities] is list of files need to be uploaded to oss
+  /// [bucketName] is optional, we use the default bucketName as we defined in Client
+  Future<List<Response<dynamic>>> putObjects(List<AssetEntity> assetEntities,
+      {String? bucketName}) async {
+    final uploads = assetEntities
+        .map((file) async =>
+            await putObject(file.bytes, file.filename, bucketName: bucketName))
+        .toList();
+    return await Future.wait(uploads);
+  }
+
   /// delete object from oss
   Future<Response<dynamic>> deleteObject(String fileKey,
       {String? bucketName}) async {
@@ -116,11 +129,21 @@ class OSSClient {
 
     final String url = "https://$bucket.$endpoint/$fileKey";
     final HttpRequest request = HttpRequest(
-        url, 'DELETE', {}, {'content-type': 'application/json; charset=utf-8'});
+        url, 'DELETE', {}, {'content-type': Headers.jsonContentType});
     auth.sign(request, bucket, fileKey);
 
     return RestClient.getInstance()
         .delete(request.url, options: Options(headers: request.headers));
+  }
+
+  /// delete objects from oss
+  Future<List<Response<dynamic>>> deleteObjects(List<String> keys,
+      {String? bucketName}) async {
+    final deletes = keys
+        .map((fileKey) async =>
+            await deleteObject(fileKey, bucketName: bucketName))
+        .toList();
+    return await Future.wait(deletes);
   }
 
   /// whether auth is valid or not

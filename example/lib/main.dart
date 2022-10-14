@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_oss_aliyun/flutter_oss_aliyun.dart';
+import 'package:flutter_oss_aliyun/src/asset_entity.dart';
 
 void main() {
   runApp(
@@ -57,6 +58,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 await OSSClient().deleteObject("filename.txt");
               },
               child: const Text("Delete object"),
+            ),
+            TextButton(
+              onPressed: () async {
+                await Client().putObjects([
+                  AssetEntity(
+                      filename: "filename1.txt", bytes: "files1".codeUnits),
+                  AssetEntity(
+                      filename: "filename2.txt", bytes: "files2".codeUnits),
+                ]);
+              },
+              child: const Text("Batch upload object"),
+            ),
+            TextButton(
+              onPressed: () async {
+                await Client()
+                    .deleteObjects(["filename1.txt", "filename2.txt"]);
+              },
+              child: const Text("Batch delete object"),
             ),
           ],
         ),
